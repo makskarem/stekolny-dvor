@@ -1,0 +1,97 @@
+<section class="catalog-page">
+    <div class="container">
+        <div class="catalog-layout">
+            <!-- Боковая панель с категориями -->
+            <aside class="catalog-sidebar">
+                <h3>Категории</h3>
+                <ul class="category-list">
+                    <li>
+                        <a href="/catalog" class="<%= !currentCategory ? 'active' : '' %>">Все товары</a>
+                    </li>
+                    <% categories.forEach(category => { %>
+                        <li>
+                            <a href="/catalog?category=<%= category.slug %>" 
+                               class="<%= currentCategory && currentCategory.id === category.id ? 'active' : '' %>">
+                                <%= category.name %>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            </aside>
+
+            <!-- Основной контент -->
+            <main class="catalog-main">
+                <div class="catalog-header">
+                    <h1>
+                        <% if (currentCategory) { %>
+                            <%= currentCategory.name %>
+                        <% } else if (search) { %>
+                            Результаты поиска: "<%= search %>"
+                        <% } else { %>
+                            Все товары
+                        <% } %>
+                    </h1>
+                    <div class="catalog-controls">
+                        <form class="search-form" action="/catalog" method="GET">
+                            <input type="text" name="search" placeholder="Поиск товаров..." value="<%= search || '' %>">
+                            <button type="submit">Поиск</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="products-grid">
+                    <% if (products.length > 0) { %>
+                        <% products.forEach(product => { %>
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="<%= product.image_url || '/images/placeholder.jpg' %>" alt="<%= product.name %>">
+                                    <% if (product.is_new) { %>
+                                        <span class="badge new">Новинка</span>
+                                    <% } %>
+                                    <% if (product.is_popular) { %>
+                                        <span class="badge popular">Популярное</span>
+                                    <% } %>
+                                    <% if (product.is_exclusive) { %>
+                                        <span class="badge exclusive">Эксклюзив</span>
+                                    <% } %>
+                                </div>
+                                <div class="product-info">
+                                    <h3><%= product.name %></h3>
+                                    <p class="product-category"><%= product.category_name || 'Без категории' %></p>
+                                    <p class="product-volume"><%= product.volume || '' %></p>
+                                    <p class="product-price"><%= product.price %> ₽</p>
+                                    <div class="product-actions">
+                                        <a href="/catalog/<%= product.slug %>" class="btn btn-detail">Подробнее</a>
+                                        <button class="btn btn-cart add-to-cart" data-id="<%= product.id %>">В корзину</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="no-products">Товары не найдены</p>
+                    <% } %>
+                </div>
+
+                <!-- Пагинация -->
+                <% if (pagination.totalPages > 1) { %>
+                    <div class="pagination">
+                        <% if (pagination.currentPage > 1) { %>
+                            <a href="?page=<%= pagination.currentPage - 1 %><%= currentCategory ? '&category=' + currentCategory.slug : '' %><%= search ? '&search=' + search : '' %>">←</a>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                            <a href="?page=<%= i %><%= currentCategory ? '&category=' + currentCategory.slug : '' %><%= search ? '&search=' + search : '' %>" 
+                               class="<%= i === pagination.currentPage ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                        <% } %>
+                        
+                        <% if (pagination.currentPage < pagination.totalPages) { %>
+                            <a href="?page=<%= pagination.currentPage + 1 %><%= currentCategory ? '&category=' + currentCategory.slug : '' %><%= search ? '&search=' + search : '' %>">→</a>
+                        <% } %>
+                    </div>
+                <% } %>
+            </main>
+        </div>
+    </div>
+</section>

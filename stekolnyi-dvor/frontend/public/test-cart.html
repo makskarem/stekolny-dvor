@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест корзины</title>
+</head>
+<body>
+    <h1>Тест корзины</h1>
+    
+    <button onclick="testAdd()">Добавить товар 1</button>
+    <button onclick="testAdd2()">Добавить товар 2</button>
+    <button onclick="testCount()">Проверить количество</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        async function testAdd() {
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: 1, quantity: 1 })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerHTML = JSON.stringify(data, null, 2);
+            console.log(data);
+        }
+        
+        async function testAdd2() {
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: 2, quantity: 1 })
+            });
+            const data = await response.json();
+            document.getElementById('result').innerHTML = JSON.stringify(data, null, 2);
+            console.log(data);
+        }
+        
+        async function testCount() {
+            const response = await fetch('/api/cart/count');
+            const data = await response.json();
+            document.getElementById('result').innerHTML = JSON.stringify(data, null, 2);
+            console.log(data);
+        }
+    </script>
+</body>
+</html>

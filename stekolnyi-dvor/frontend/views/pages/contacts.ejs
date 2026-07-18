@@ -1,0 +1,117 @@
+<section class="contacts-page">
+    <div class="container">
+        <div style="max-width: 900px; margin: 0 auto; padding: 40px 0;">
+            <h1 style="text-align: center; margin-bottom: 40px;">Контакты</h1>
+            
+            <div class="contacts-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <!-- Контактная информация -->
+                <div>
+                    <h3 style="margin-bottom: 20px;">📍 Адрес</h3>
+                    <p style="line-height: 1.8; color: #495057;">
+                        Москва, МКАД, 33 километр,<br>
+                        владение 6, ТЦ Евромаркет<br>
+                        <strong>Варшавка 33</strong>
+                    </p>
+                    
+                    <h3 style="margin: 30px 0 20px;">📞 Телефон</h3>
+                    <p style="line-height: 1.8; color: #495057;">
+                        Коммерческий отдел:<br>
+                        <strong style="font-size: 20px; color: #1a1a2e;">+7 977 323-87-30</strong>
+                    </p>
+                    
+                    <h3 style="margin: 30px 0 20px;">✉️ Email</h3>
+                    <p style="line-height: 1.8; color: #495057;">
+                        <strong style="font-size: 18px; color: #1a1a2e;">info@34km.ru</strong>
+                    </p>
+                    
+                    <h3 style="margin: 30px 0 20px;">🕐 Режим работы</h3>
+                    <p style="line-height: 1.8; color: #495057;">
+                        Пн-Пт: 9:00 - 19:00<br>
+                        Сб-Вс: 10:00 - 17:00
+                    </p>
+                </div>
+                
+                <!-- Форма обратной связи -->
+                <div>
+                    <h3 style="margin-bottom: 20px;">📝 Напишите нам</h3>
+                    <form id="contact-form" style="background: #f8f9fa; padding: 30px; border-radius: 12px;">
+                        <div class="form-group">
+                            <label for="contact_name">Ваше имя *</label>
+                            <input type="text" id="contact_name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_phone">Телефон *</label>
+                            <input type="tel" id="contact_phone" name="phone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_email">Email</label>
+                            <input type="email" id="contact_email" name="email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_message">Сообщение *</label>
+                            <textarea id="contact_message" name="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить сообщение</button>
+                    </form>
+                    <div id="contact-result" style="margin-top: 16px; display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@media (max-width: 768px) {
+    .contacts-content {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+    }
+}
+</style>
+
+<script>
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('.btn');
+    const resultDiv = document.getElementById('contact-result');
+    
+    submitBtn.textContent = 'Отправляем...';
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        resultDiv.style.display = 'block';
+        if (result.success) {
+            resultDiv.innerHTML = '<div class="alert alert-success">✅ Сообщение отправлено! Мы свяжемся с вами.</div>';
+            this.reset();
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-error">❌ ' + (result.message || 'Ошибка отправки') + '</div>';
+        }
+    } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<div class="alert alert-error">❌ Ошибка отправки. Попробуйте позже.</div>';
+    }
+    
+    submitBtn.textContent = 'Отправить сообщение';
+    submitBtn.disabled = false;
+    
+    setTimeout(() => {
+        resultDiv.style.display = 'none';
+    }, 5000);
+});
+</script>

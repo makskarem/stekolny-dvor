@@ -1,0 +1,108 @@
+<section class="admin-page">
+    <div class="container">
+        <h1>Детали заказа #<%= order.order_number %>
+        </h1>
+
+        <div class="admin-nav">
+            <a href="/admin">Дашборд</a>
+            <a href="/admin/products">Товары</a>
+            <a href="/admin/categories">Категории</a>
+            <a href="/admin/orders" class="active">Заказы</a>
+        </div>
+
+        <div class="order-detail">
+            <div class="order-info"
+                style="background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <h3>Информация о заказе</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                    <div><strong>Клиент:</strong>
+                        <%= order.customer_name %>
+                    </div>
+                    <div><strong>Телефон:</strong>
+                        <%= order.phone %>
+                    </div>
+                    <div><strong>Email:</strong>
+                        <%= order.email %>
+                    </div>
+                    <div><strong>Адрес:</strong>
+                        <%= order.address || 'Не указан' %>
+                    </div>
+                    <div><strong>Комментарий:</strong>
+                        <%= order.comment || 'Нет' %>
+                    </div>
+                    <div><strong>Способ связи:</strong>
+                        <%= order.contact_method || 'Не указан' %>
+                    </div>
+                    <div><strong>Дата заказа:</strong>
+                        <%= new Date(order.created_at).toLocaleString('ru-RU') %>
+                    </div>
+                    <div><strong>Статус:</strong>
+                        <span class="order-status status-<%= order.status %>">
+                            <%= order.status==='new' ? 'Новый' : order.status==='processing' ? 'В обработке' :
+                                order.status==='shipped' ? 'Отправлен' : order.status==='delivered' ? 'Доставлен' :
+                                order.status==='cancelled' ? 'Отменен' : order.status %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-status-update"
+                style="background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <h3>Изменить статус</h3>
+                <form action="/admin/orders/update-status/<%= order.id %>" method="POST"
+                    style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <select name="status" style="padding: 10px 14px; border: 1px solid #dee2e6; border-radius: 6px;">
+                        <option value="new" <%=order.status==='new' ? 'selected' : '' %>>Новый</option>
+                        <option value="processing" <%=order.status==='processing' ? 'selected' : '' %>>В обработке
+                        </option>
+                        <option value="shipped" <%=order.status==='shipped' ? 'selected' : '' %>>Отправлен</option>
+                        <option value="delivered" <%=order.status==='delivered' ? 'selected' : '' %>>Доставлен</option>
+                        <option value="cancelled" <%=order.status==='cancelled' ? 'selected' : '' %>>Отменен</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Обновить статус</button>
+                </form>
+            </div>
+
+            <div class="order-items"
+                style="background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <h3 style="padding: 16px 20px;">Товары в заказе</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                            <th>Цена</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% items.forEach(item=> { %>
+                            <tr>
+                                <td>
+                                    <%= item.name %>
+                                </td>
+                                <td>
+                                    <%= item.quantity %>
+                                </td>
+                                <td>
+                                    <%= item.price %> ₽
+                                </td>
+                                <td>
+                                    <%= (item.quantity * item.price).toFixed(2) %> ₽
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Итого:</strong></td>
+                            <td><strong>
+                                    <%= order.total_amount %> ₽
+                                </strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

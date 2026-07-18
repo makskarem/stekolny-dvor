@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Стекольный двор' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>Стекольный двор</h1>
+                        <span>33 км МКАД</span>
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <nav class="main-nav">
+                        <a href="/">Главная</a>
+                        <a href="/catalog">Каталог</a>
+                        <a href="/about">О нас</a>
+                        <a href="/contacts">Контакты</a>
+                    </nav>
+                    <div class="user-actions">
+                        <% if (user && user.is_admin) { %>
+                            <a href="/admin" class="btn-admin">Админка</a>
+                            <a href="/logout" class="btn-logout">Выйти</a>
+                        <% } else { %>
+                            <a href="/login" class="btn-login">Вход для админа</a>
+                        <% } %>
+                        <a href="/wishlist" class="wishlist-link" id="wishlistLink">
+                            ❤️ Желаемое
+                            <span class="wishlist-count"><%= wishlistCount || 0 %></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <%- body %>
+    </main>
+
+    <footer class="footer" id="contacts">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Стекольный двор</h3>
+                    <p>33 км МКАД, Москва</p>
+                    <p>Оптово-розничная продажа стеклянных банок и бутылок</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>📞 +7 977 323-87-30</p>
+                    <p>✉️ info@34km.ru</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Режим работы</h4>
+                    <p>Пн-Пт: 9:00 - 19:00</p>
+                    <p>Сб-Вс: 10:00 - 17:00</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Стекольный двор. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    
+    <script>
+    // Обновляем ссылку на желаемое с параметрами
+    function updateWishlistLink() {
+        const link = document.getElementById('wishlistLink');
+        if (!link) return;
+        
+        try {
+            const data = localStorage.getItem('wishlist');
+            if (data) {
+                const ids = JSON.parse(data);
+                if (ids.length > 0) {
+                    link.href = '/wishlist?ids=' + ids.join(',');
+                } else {
+                    link.href = '/wishlist';
+                }
+            }
+        } catch (e) {
+            console.error('Error updating wishlist link:', e);
+        }
+    }
+
+    // Вызываем при загрузке
+    document.addEventListener('DOMContentLoaded', updateWishlistLink);
+
+    // Обновляем при изменении желаемого
+    const originalAdd = addToWishlist;
+    addToWishlist = function(productId) {
+        originalAdd(productId);
+        setTimeout(updateWishlistLink, 100);
+    };
+
+    const originalRemove = removeFromWishlist;
+    removeFromWishlist = function(productId) {
+        originalRemove(productId);
+        setTimeout(updateWishlistLink, 100);
+    };
+    </script>
+</body>
+</html>

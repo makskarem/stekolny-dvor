@@ -1,0 +1,75 @@
+<section class="admin-page">
+    <div class="container">
+        <h1>Админ-панель</h1>
+        
+        <div class="admin-nav">
+            <a href="/admin" class="active">Дашборд</a>
+            <a href="/admin/products">Товары</a>
+            <a href="/admin/categories">Категории</a>
+            <a href="/admin/orders">Заказы</a>
+        </div>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3>Всего товаров</h3>
+                <p class="stat-number"><%= stats.total_products || 0 %></p>
+            </div>
+            <div class="stat-card">
+                <h3>В наличии</h3>
+                <p class="stat-number" style="color: #28a745;"><%= stats.in_stock || 0 %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Нет в наличии</h3>
+                <p class="stat-number" style="color: #dc3545;"><%= stats.out_stock || 0 %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Категории</h3>
+                <p class="stat-number"><%= stats.total_categories || 0 %></p>
+            </div>
+            <div class="stat-card">
+                <h3>В желаемом</h3>
+                <p class="stat-number"><%= stats.wishlist_count || 0 %></p>
+            </div>
+        </div>
+        
+        <% if (recentOrders && recentOrders.length > 0) { %>
+            <div class="recent-orders">
+                <h2>Последние заказы</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>№ заказа</th>
+                            <th>Клиент</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentOrders.forEach(order => { %>
+                            <tr>
+                                <td><%= order.order_number %></td>
+                                <td><%= order.customer_name %></td>
+                                <td><%= order.total_amount %> ₽</td>
+                                <td>
+                                    <span class="order-status status-<%= order.status %>">
+                                        <%= order.status === 'new' ? 'Новый' : 
+                                           order.status === 'processing' ? 'В обработке' :
+                                           order.status === 'shipped' ? 'Отправлен' :
+                                           order.status === 'delivered' ? 'Доставлен' :
+                                           order.status === 'cancelled' ? 'Отменен' : order.status %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(order.created_at).toLocaleDateString('ru-RU') %></td>
+                                <td>
+                                    <a href="/admin/orders/<%= order.id %>" class="btn btn-edit">Просмотр</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</section>

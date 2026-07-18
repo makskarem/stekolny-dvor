@@ -1,0 +1,74 @@
+<section class="admin-page">
+    <div class="container">
+        <div class="admin-header">
+            <h1>Управление товарами</h1>
+            <a href="/admin/products/add" class="btn btn-primary">+ Добавить товар</a>
+        </div>
+        
+        <div class="admin-nav">
+            <a href="/admin">Дашборд</a>
+            <a href="/admin/products" class="active">Товары</a>
+            <a href="/admin/categories">Категории</a>
+            <a href="/admin/orders">Заказы</a>
+        </div>
+        
+        <div class="admin-products-list">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Фото</th>
+                        <th>Название</th>
+                        <th>Категория</th>
+                        <th>Цена</th>
+                        <th>В наличии</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (products && products.length > 0) { %>
+                        <% products.forEach(product => { %>
+                            <tr>
+                                <td><%= product.id %></td>
+                                <td>
+                                    <% 
+                                    let adminImg = '/images/placeholder.jpg';
+                                    if (product.images) {
+                                        try {
+                                            const imgs = JSON.parse(product.images);
+                                            if (imgs.length > 0) adminImg = imgs[0];
+                                        } catch(e) {}
+                                    } else if (product.image_url) {
+                                        adminImg = product.image_url;
+                                    }
+                                    %>
+                                    <img src="<%= adminImg %>" alt="<%= product.name %>" class="admin-product-thumb">
+                                </td>
+                                <td><%= product.name %></td>
+                                <td><%= product.category_name || '-' %></td>
+                                <td><%= product.price %> ₽</td>
+                                <td>
+                                    <span class="status-<%= product.in_stock ? 'in' : 'out' %>">
+                                        <%= product.in_stock ? '✅ В наличии' : '❌ Нет в наличии' %>
+                                    </span>
+                                </td>
+                                <td class="admin-actions">
+                                    <a href="/admin/products/edit/<%= product.id %>" class="btn btn-edit">Редактировать</a>
+                                    <form action="/admin/products/delete/<%= product.id %>" method="POST" class="delete-form">
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Удалить товар?')">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px; color: #6c757d;">
+                                Товары не найдены
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

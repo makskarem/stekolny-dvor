@@ -1,0 +1,28 @@
+<section class="profile-page">
+    <div class="container">
+        <div style="max-width: 500px; margin: 0 auto; padding: 40px 0;">
+            <h1 style="text-align: center; margin-bottom: 30px;">Личный кабинет</h1>
+            
+            <div style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <form action="/profile" method="POST" class="profile-form">
+                    <div class="form-group">
+                        <label for="full_name">Полное имя</label>
+                        <input type="text" id="full_name" name="full_name" value="<%= user.full_name || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Телефон</label>
+                        <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Адрес</label>
+                        <textarea id="address" name="address" rows="3"><%= user.address || '' %></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Обновить данные</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

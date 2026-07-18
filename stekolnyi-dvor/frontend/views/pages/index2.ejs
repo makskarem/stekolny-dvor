@@ -1,0 +1,242 @@
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>«Стекольный двор» <span>33 км МКАД</span></h1>
+            <p class="hero-subtitle">Стеклобанки. Стеклобутылки.</p>
+            <p class="hero-description">Оптово-розничная продажа стеклянных банок и бутылок в Москве и МО.</p>
+            
+            <!-- Кнопка заказа звонка -->
+            <button class="btn btn-call" onclick="openCallModal()">📞 Заказать звонок</button>
+        </div>
+    </div>
+</section>
+
+<!-- Популярные товары -->
+<section class="slider-section">
+    <div class="container">
+        <h2>Популярные товары</h2>
+        <div class="slider-container">
+            <div class="slider-track">
+                <% if (popularProducts && popularProducts.length > 0) { %>
+                    <% popularProducts.forEach(product => { %>
+                        <div class="slider-item">
+                            <div class="product-card">
+                                <div class="product-image">
+                                    <img src="<%= product.image_url || '/images/placeholder.jpg' %>" alt="<%= product.name %>">
+                                    <% if (product.is_exclusive) { %>
+                                        <span class="badge exclusive">Эксклюзив</span>
+                                    <% } %>
+                                    <% if (product.is_popular) { %>
+                                        <span class="badge popular">Популярное</span>
+                                    <% } %>
+                                </div>
+                                <div class="product-info">
+                                    <h3><%= product.name %></h3>
+                                    <p class="product-category"><%= product.category_name || 'Без категории' %></p>
+                                    <p class="product-price"><%= product.price %> ₽</p>
+                                    <div class="product-actions">
+                                        <a href="/catalog/<%= product.slug %>" class="btn btn-detail">Подробнее</a>
+                                        <button class="btn btn-wishlist add-to-wishlist" data-id="<%= product.id %>">❤️ В желаемое</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>Товары пока не добавлены</p>
+                <% } %>
+            </div>
+            <button class="slider-btn prev">‹</button>
+            <button class="slider-btn next">›</button>
+        </div>
+    </div>
+</section>
+
+<!-- Новинки -->
+<section class="new-products">
+    <div class="container">
+        <h2>Новинки</h2>
+        <div class="products-grid" id="newProductsGrid">
+            <% if (newProducts && newProducts.length > 0) { %>
+                <% newProducts.slice(0, 4).forEach(product => { %>
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="<%= product.image_url || '/images/placeholder.jpg' %>" alt="<%= product.name %>">
+                            <span class="badge new">Новинка</span>
+                        </div>
+                        <div class="product-info">
+                            <h3><%= product.name %></h3>
+                            <p class="product-category"><%= product.category_name || 'Без категории' %></p>
+                            <p class="product-price"><%= product.price %> ₽</p>
+                            <div class="product-actions">
+                                <a href="/catalog/<%= product.slug %>" class="btn btn-detail">Подробнее</a>
+                                <button class="btn btn-wishlist add-to-wishlist" data-id="<%= product.id %>">❤️ В желаемое</button>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>Новинок пока нет</p>
+            <% } %>
+        </div>
+        
+        <% if (newProducts && newProducts.length > 4) { %>
+            <button class="btn-show-more" onclick="showMoreNewProducts()">Показать больше</button>
+        <% } %>
+    </div>
+</section>
+
+<!-- Категории -->
+<section class="categories-section">
+    <div class="container">
+        <h2>Категории товаров</h2>
+        <div class="categories-grid">
+            <% if (categories && categories.length > 0) { %>
+                <% categories.forEach(category => { %>
+                    <a href="/catalog?category=<%= category.slug %>" class="category-item">
+                        <%= category.name %>
+                    </a>
+                <% }) %>
+            <% } else { %>
+                <p>Категории пока не добавлены</p>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<!-- Модальное окно заказа звонка -->
+<div id="callModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeCallModal()">&times;</span>
+        <h2>📞 Заказать звонок</h2>
+        <p>Оставьте свои контакты, и мы свяжемся с вами в ближайшее время</p>
+        <form id="callForm">
+            <div class="form-group">
+                <label for="call_name">Ваше имя *</label>
+                <input type="text" id="call_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="call_phone">Телефон *</label>
+                <input type="tel" id="call_phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="call_message">Комментарий</label>
+                <textarea id="call_message" name="message" rows="3" placeholder="Что вас интересует?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить заявку</button>
+        </form>
+        <div id="callResult" style="margin-top: 16px; display:none;"></div>
+    </div>
+</div>
+
+<script>
+// Модальное окно
+function openCallModal() {
+    const modal = document.getElementById('callModal');
+    modal.style.display = 'flex';
+}
+
+function closeCallModal() {
+    const modal = document.getElementById('callModal');
+    modal.style.display = 'none';
+}
+
+// Закрытие по клику вне окна
+window.onclick = function(event) {
+    const modal = document.getElementById('callModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Отправка формы
+document.getElementById('callForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('.btn');
+    const resultDiv = document.getElementById('callResult');
+    
+    submitBtn.textContent = 'Отправляем...';
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/api/call-request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        resultDiv.style.display = 'block';
+        if (result.success) {
+            resultDiv.innerHTML = '<div class="alert alert-success">✅ Заявка отправлена! Мы свяжемся с вами.</div>';
+            this.reset();
+            setTimeout(() => {
+                closeCallModal();
+                resultDiv.style.display = 'none';
+            }, 3000);
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-error">❌ ' + (result.message || 'Ошибка отправки') + '</div>';
+        }
+    } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<div class="alert alert-error">❌ Ошибка отправки. Попробуйте позже.</div>';
+    }
+    
+    submitBtn.textContent = 'Отправить заявку';
+    submitBtn.disabled = false;
+});
+</script>
+
+<script>
+let newProductsShown = 4;
+const allNewProducts = <%= JSON.stringify(newProducts) %>;
+
+function showMoreNewProducts() {
+    const grid = document.getElementById('newProductsGrid');
+    const hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
+    
+    hidden.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <div class="product-image">
+                <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}">
+                <span class="badge new">Новинка</span>
+            </div>
+            <div class="product-info">
+                <h3>${product.name}</h3>
+                <p class="product-category">${product.category_name || 'Без категории'}</p>
+                <p class="product-price">${product.price} ₽</p>
+                <div class="product-actions">
+                    <a href="/catalog/${product.slug}" class="btn btn-detail">Подробнее</a>
+                    <button class="btn btn-wishlist add-to-wishlist" data-id="${product.id}">❤️ В желаемое</button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    newProductsShown += hidden.length;
+    
+    if (newProductsShown >= allNewProducts.length) {
+        this.style.display = 'none';
+    }
+    
+    // Инициализируем новые кнопки
+    document.querySelectorAll('.add-to-wishlist').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.id;
+            if (productId) {
+                addToWishlist(productId);
+            }
+        });
+    });
+}
+</script>

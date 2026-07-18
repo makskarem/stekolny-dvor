@@ -1,0 +1,123 @@
+<section class="product-detail">
+    <div class="container">
+        <a href="javascript:history.back()" class="back-link">← Назад</a>
+        
+        <div class="product-detail-layout">
+            <div class="product-detail-image">
+                <!-- Слайдер -->
+                <div class="slider-container">
+                    <div class="slider-main">
+                        <% 
+                            let images = [];
+                            try {
+                                images = JSON.parse(product.images || '[]');
+                            } catch(e) {
+                                images = [];
+                            }
+                            if (images.length === 0 && product.image_url) {
+                                images = [product.image_url];
+                            }
+                            if (images.length === 0) {
+                                images = ['/images/placeholder.jpg'];
+                            }
+                        %>
+                        <% images.forEach((img, index) => { %>
+                            <div class="slider-slide <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>">
+                                <img src="<%= img %>" alt="<%= product.name %> - фото <%= index + 1 %>">
+                            </div>
+                        <% }) %>
+                    </div>
+                    
+                    <% if (images.length > 1) { %>
+                        <button class="slider-btn-prev" onclick="slidePrev()">‹</button>
+                        <button class="slider-btn-next" onclick="slideNext()">›</button>
+                        <div class="slider-dots">
+                            <% images.forEach((_, index) => { %>
+                                <span class="dot <%= index === 0 ? 'active' : '' %>" data-slide="<%= index %>"></span>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="product-detail-info">
+                <h1><%= product.name %></h1>
+                <p class="product-category">Категория: <%= product.category_name || 'Без категории' %></p>
+                
+                <div class="product-detail-description">
+                    <p><%= product.description || 'Описание отсутствует' %></p>
+                </div>
+                
+                <div class="product-detail-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Объем:</span>
+                        <span class="spec-value"><%= product.volume || 'Не указан' %></span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Цена:</span>
+                        <span class="spec-value price"><%= product.price %> ₽</span>
+                    </div>
+                </div>
+                
+                <% if (product.is_new) { %>
+                    <span class="badge new">Новинка</span>
+                <% } %>
+                <% if (product.is_popular) { %>
+                    <span class="badge popular">Популярное</span>
+                <% } %>
+                
+                <div class="product-detail-actions">
+                    <button class="btn btn-wishlist add-to-wishlist" data-id="<%= product.id %>">❤️ В желаемое</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Слайдер
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slider-slide');
+const dots = document.querySelectorAll('.dot');
+
+function goToSlide(index) {
+    if (slides.length === 0) return;
+    if (index < 0) index = slides.length - 1;
+    if (index >= slides.length) index = 0;
+    
+    slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+    });
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+    });
+    currentSlide = index;
+}
+
+function slidePrev() {
+    goToSlide(currentSlide - 1);
+}
+
+function slideNext() {
+    goToSlide(currentSlide + 1);
+}
+
+// Обработчики для точек (dot)
+document.querySelectorAll('.dot').forEach(dot => {
+    dot.addEventListener('click', function() {
+        const index = parseInt(this.dataset.slide);
+        if (!isNaN(index)) {
+            goToSlide(index);
+        }
+    });
+});
+
+// Клавиши вправо/влево для навигации
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') {
+        slidePrev();
+    } else if (e.key === 'ArrowRight') {
+        slideNext();
+    }
+});
+</script>

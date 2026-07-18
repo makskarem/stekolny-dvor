@@ -1,0 +1,74 @@
+<section class="checkout-page">
+    <div class="container">
+        <h1>Оформление заказа</h1>
+        
+        <% if (items && items.length > 0) { %>
+            <div class="checkout-layout">
+                <div class="checkout-form">
+                    <form id="checkout-form">
+                        <div class="form-group">
+                            <label for="customer_name">Имя *</label>
+                            <input type="text" id="customer_name" name="customer_name" required 
+                                   value="<%= user ? user.full_name || '' : '' %>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Телефон *</label>
+                            <input type="tel" id="phone" name="phone" required 
+                                   value="<%= user ? user.phone || '' : '' %>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required 
+                                   value="<%= user ? user.email : '' %>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Адрес доставки</label>
+                            <textarea id="address" name="address" rows="3"><%= user ? user.address || '' : '' %></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="comment">Комментарий к заказу</label>
+                            <textarea id="comment" name="comment" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_method">Способ связи *</label>
+                            <select id="contact_method" name="contact_method" required>
+                                <option value="phone">По телефону</option>
+                                <option value="email">По email</option>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="telegram">Telegram</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-submit">Оформить заказ</button>
+                    </form>
+                </div>
+                
+                <div class="checkout-summary">
+                    <h3>Ваш заказ</h3>
+                    <div class="checkout-items">
+                        <% items.forEach(item => { %>
+                            <div class="checkout-item">
+                                <span class="checkout-item-name"><%= item.name %> × <%= item.quantity %></span>
+                                <span class="checkout-item-price"><%= (item.quantity * item.product_price).toFixed(2) %> ₽</span>
+                            </div>
+                        <% }) %>
+                    </div>
+                    <div class="checkout-total">
+                        <span>Итого:</span>
+                        <span><%= total.toFixed(2) %> ₽</span>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="cart-empty">
+                <p>Ваша корзина пуста</p>
+                <a href="/catalog" class="btn btn-primary">Перейти в каталог</a>
+            </div>
+        <% } %>
+    </div>
+</section>

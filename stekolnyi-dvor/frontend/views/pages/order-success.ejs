@@ -1,0 +1,60 @@
+<section class="order-success">
+    <div class="container">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h1>Заказ успешно оформлен!</h1>
+            <p>Номер вашего заказа: <strong>#<%= order.order_number %></strong></p>
+            
+            <div class="order-details">
+                <h3>Детали заказа</h3>
+                <div class="order-info">
+                    <p><strong>Клиент:</strong> <%= order.customer_name %></p>
+                    <p><strong>Телефон:</strong> <%= order.phone %></p>
+                    <p><strong>Email:</strong> <%= order.email %></p>
+                    <% if (order.address) { %>
+                        <p><strong>Адрес:</strong> <%= order.address %></p>
+                    <% } %>
+                    <p><strong>Способ связи:</strong> <%= order.contact_method %></p>
+                    <p><strong>Статус:</strong> 
+                        <span class="order-status status-<%= order.status %>">
+                            <%= order.status === 'new' ? 'Новый' : order.status %>
+                        </span>
+                    </p>
+                </div>
+                
+                <h4>Товары в заказе</h4>
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                            <th>Цена</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% items.forEach(item => { %>
+                            <tr>
+                                <td><%= item.name %></td>
+                                <td><%= item.quantity %></td>
+                                <td><%= item.price %> ₽</td>
+                                <td><%= (item.quantity * item.price).toFixed(2) %> ₽</td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Итого:</strong></td>
+                            <td><strong><%= order.total_amount %> ₽</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="success-actions">
+                <a href="/" class="btn btn-primary">На главную</a>
+                <a href="/catalog" class="btn btn-secondary">Продолжить покупки</a>
+            </div>
+        </div>
+    </div>
+</section>

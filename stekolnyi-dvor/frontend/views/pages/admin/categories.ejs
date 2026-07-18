@@ -1,0 +1,63 @@
+<section class="admin-page">
+    <div class="container">
+        <div class="admin-header">
+            <h1>Управление категориями</h1>
+        </div>
+        
+        <div class="admin-nav">
+            <a href="/admin">Дашборд</a>
+            <a href="/admin/products">Товары</a>
+            <a href="/admin/categories" class="active">Категории</a>
+            <a href="/admin/orders">Заказы</a>
+        </div>
+        
+        <!-- Форма добавления категории -->
+        <div style="background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <h3>Добавить категорию</h3>
+            <form action="/admin/categories/add" method="POST" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <input type="text" name="name" placeholder="Название категории" required style="flex: 1; min-width: 200px; padding: 10px 14px; border: 1px solid #dee2e6; border-radius: 6px;">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </form>
+        </div>
+        
+        <!-- Список категорий -->
+        <div style="background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Slug</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (categories && categories.length > 0) { %>
+                        <% categories.forEach(category => { %>
+                            <tr>
+                                <td><%= category.id %></td>
+                                <td><%= category.name %></td>
+                                <td><%= category.slug %></td>
+                                <td class="admin-actions">
+                                    <form action="/admin/categories/edit/<%= category.id %>" method="POST" style="display: inline-block;">
+                                        <input type="text" name="name" value="<%= category.name %>" style="padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 4px; width: 150px;">
+                                        <button type="submit" class="btn btn-edit" style="padding: 4px 12px;">Обновить</button>
+                                    </form>
+                                    <form action="/admin/categories/delete/<%= category.id %>" method="POST" style="display: inline-block;">
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Удалить категорию?')" style="padding: 4px 12px;">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: #6c757d;">
+                                Категории не найдены
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

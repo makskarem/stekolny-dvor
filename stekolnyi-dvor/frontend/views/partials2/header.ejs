@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Стекольный двор' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <a href="/">
+                        <h1>Стекольный двор</h1>
+                        <span>33 км МКАД</span>
+                    </a>
+                </div>
+                <div class="header-actions">
+                    <nav class="main-nav">
+                        <a href="/">Главная</a>
+                        <a href="/catalog">Каталог</a>
+                        <a href="/about">О нас</a>
+                        <a href="/contacts">Контакты</a>
+                    </nav>
+                    <div class="user-actions">
+                        <% if (user) { %>
+                            <a href="/profile" class="user-btn"><%= user.full_name || user.username %></a>
+                            <a href="/logout" class="btn-logout">Выйти</a>
+                            <% if (user.is_admin) { %>
+                                <a href="/admin" class="btn-admin">Админка</a>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/login" class="btn-login">Вход</a>
+                            <a href="/register" class="btn-register">Регистрация</a>
+                        <% } %>
+                        <a href="/cart" class="cart-link">
+                            🛒 Корзина
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>

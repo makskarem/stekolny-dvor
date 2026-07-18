@@ -1,0 +1,200 @@
+<section class="wishlist-page">
+    <div class="container">
+        <h1>❤️ Желаемое</h1>
+        
+        <div id="wishlistContainer">
+            <% if (items && items.length > 0) { %>
+                <div class="wishlist-grid" id="wishlistGrid">
+                    <% items.forEach(item => { %>
+                        <div class="wishlist-item" data-id="<%= item.id %>">
+                            <div class="wishlist-item-image">
+                                <img src="<%= getFirstImage(item) %>" alt="<%= item.name %>">
+                            </div>
+                            <div class="wishlist-item-info">
+                                <h3><a href="/catalog/<%= item.slug %>"><%= item.name %></a></h3>
+                                <p class="wishlist-item-category"><%= item.category_name || 'Без категории' %></p>
+                                <p class="wishlist-item-price"><%= item.price %> ₽</p>
+                                <button class="btn btn-danger remove-from-wishlist" data-id="<%= item.id %>">🗑️ Удалить</button>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <!-- Форма для заказа консультации -->
+                <div class="wishlist-order">
+                    <h2>📞 Заказать консультацию по выбранным товарам</h2>
+                    <p>Оставьте свои контакты, и мы проконсультируем вас по всем товарам из желаемого</p>
+                    
+                    <form id="wishlistOrderForm">
+                        <div class="form-group">
+                            <label for="order_name">Ваше имя *</label>
+                            <input type="text" id="order_name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="order_phone">Телефон *</label>
+                            <input type="tel" id="order_phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="order_email">Email</label>
+                            <input type="email" id="order_email" name="email" placeholder="example@mail.ru">
+                        </div>
+                        <div class="form-group">
+                            <label for="order_message">Дополнительный комментарий</label>
+                            <textarea id="order_message" name="message" rows="3" placeholder="Что вас интересует?"></textarea>
+                        </div>
+                        <input type="hidden" name="products" value='<%= JSON.stringify(items.map(i => ({ id: i.id, name: i.name, price: i.price, category: i.category_name }))) %>'>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Отправить запрос</button>
+                    </form>
+                    <div id="orderResult" style="margin-top: 16px; display:none;"></div>
+                </div>
+            <% } else { %>
+                <div class="wishlist-empty">
+                    <p>Ваше желаемое пусто</p>
+                    <a href="/catalog" class="btn btn-primary">Перейти в каталог</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<script>
+// Функция удаления из желаемого
+document.querySelectorAll('.remove-from-wishlist').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = parseInt(this.dataset.id);
+        const itemElement = this.closest('.wishlist-item');
+        
+        // Удаляем из localStorage
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        wishlist = wishlist.filter(id => id !== productId);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        
+        // Обновляем счетчик
+        const count = wishlist.length;
+        document.querySelectorAll('.wishlist-count').forEach(el => {
+            el.textContent = count;
+        });
+        
+        // Обновляем ссылку в шапке
+        const link = document.getElementById('wishlistLink');
+        if (link) {
+            if (count > 0) {
+                link.href = '/wishlist?ids=' + wishlist.join(',');
+            } else {
+                link.href = '/wishlist';
+            }
+        }
+        
+        // Удаляем элемент со страницы
+        if (itemElement) {
+            itemElement.style.transition = 'all 0.3s ease';
+            itemElement.style.opacity = '0';
+            itemElement.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                itemElement.remove();
+                
+                // Проверяем, остались ли товары
+                const remaining = document.querySelectorAll('.wishlist-item');
+                if (remaining.length === 0) {
+                    // Показываем пустое состояние
+                    const container = document.getElementById('wishlistContainer');
+                    container.innerHTML = `
+                        <div class="wishlist-empty">
+                            <p>Ваше желаемое пусто</p>
+                            <a href="/catalog" class="btn btn-primary">Перейти в каталог</a>
+                        </div>
+                    `;
+                }
+            }, 300);
+        }
+        
+        // Обновляем URL без перезагрузки
+        if (count > 0) {
+            const newUrl = '/wishlist?ids=' + wishlist.join(',');
+            window.history.pushState({}, '', newUrl);
+        } else {
+            window.history.pushState({}, '', '/wishlist');
+        }
+        
+        showNotification('Удалено из желаемого', 'success');
+    });
+});
+
+// Форма заказа
+document.getElementById('wishlistOrderForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('.btn');
+    const resultDiv = document.getElementById('orderResult');
+    
+    submitBtn.textContent = 'Отправляем...';
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Парсим товары
+    if (data.products) {
+        try {
+            data.products = JSON.parse(data.products);
+        } catch(e) {
+            data.products = [];
+        }
+    }
+    
+    try {
+        const response = await fetch('/api/call-request', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        resultDiv.style.display = 'block';
+        if (result.success) {
+            resultDiv.innerHTML = '<div class="alert alert-success">✅ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>';
+            this.reset();
+        } else {
+            resultDiv.innerHTML = '<div class="alert alert-error">❌ ' + (result.message || 'Ошибка отправки') + '</div>';
+        }
+    } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = '<div class="alert alert-error">❌ Ошибка отправки. Попробуйте позже.</div>';
+    }
+    
+    submitBtn.textContent = 'Отправить запрос';
+    submitBtn.disabled = false;
+});
+
+function showNotification(message, type = 'success') {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 16px 24px;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: #fff;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 9999;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        max-width: 400px;
+        animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        notification.style.transition = 'all 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>

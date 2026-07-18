@@ -1,0 +1,45 @@
+
+
+<section class="cart-page">
+    <div class="container">
+        <h1>Корзина</h1>
+        
+        <% if (items && items.length > 0) { %>
+            <div class="cart-content">
+                <div class="cart-items">
+                    <% items.forEach(item => { %>
+                        <div class="cart-item" data-id="<%= item.id %>">
+                            <div class="cart-item-image">
+                                <img src="<%= item.image_url || '/images/placeholder.jpg' %>" alt="<%= item.name %>">
+                            </div>
+                            <div class="cart-item-info">
+                                <h3><%= item.name %></h3>
+                                <p class="cart-item-price"><%= item.product_price %> ₽</p>
+                            </div>
+                            <div class="cart-item-quantity">
+                                <button class="qty-btn minus update-cart" data-id="<%= item.id %>" data-action="decrease">-</button>
+                                <input type="number" class="qty-input" value="<%= item.quantity %>" min="1" max="<%= item.stock %>" data-id="<%= item.id %>">
+                                <button class="qty-btn plus update-cart" data-id="<%= item.id %>" data-action="increase">+</button>
+                            </div>
+                            <div class="cart-item-total">
+                                <p><%= (item.quantity * item.product_price).toFixed(2) %> ₽</p>
+                            </div>
+                            <button class="cart-item-remove remove-from-cart" data-id="<%= item.id %>">×</button>
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <div class="cart-summary">
+                    <h3>Итого</h3>
+                    <p class="cart-total"><%= total.toFixed(2) %> ₽</p>
+                    <a href="/checkout" class="btn btn-checkout">Оформить заказ</a>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="cart-empty">
+                <p>Ваша корзина пуста</p>
+                <a href="/catalog" class="btn btn-primary">Перейти в каталог</a>
+            </div>
+        <% } %>
+    </div>
+</section>
