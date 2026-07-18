@@ -195,48 +195,102 @@ document.getElementById('callForm').addEventListener('submit', async function(e)
 
 <script>
 let newProductsShown = 4;
-const allNewProducts = <%= JSON.stringify(newProducts) %>;
+// const allNewProducts = <%= JSON.stringify(newProducts) %>;
 
-function showMoreNewProducts() {
-    const grid = document.getElementById('newProductsGrid');
-    const hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
+// function showMoreNewProducts() {
+//     const grid = document.getElementById('newProductsGrid');
+//     const hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
     
-    hidden.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-            <div class="product-image">
-                <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}">
-                <span class="badge new">Новинка</span>
-            </div>
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                <p class="product-category">${product.category_name || 'Без категории'}</p>
-                <p class="product-price">${product.price} ₽</p>
-                <div class="product-actions">
-                    <a href="/catalog/${product.slug}" class="btn btn-detail">Подробнее</a>
-                    <button class="btn btn-wishlist add-to-wishlist" data-id="${product.id}">❤️ В желаемое</button>
+//     hidden.forEach(product => {
+//         const card = document.createElement('div');
+//         card.className = 'product-card';
+//         card.innerHTML = `
+//             <div class="product-image">
+//                 <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}">
+//                 <span class="badge new">Новинка</span>
+//             </div>
+//             <div class="product-info">
+//                 <h3>${product.name}</h3>
+//                 <p class="product-category">${product.category_name || 'Без категории'}</p>
+//                 <p class="product-price">${product.price} ₽</p>
+//                 <div class="product-actions">
+//                     <a href="/catalog/${product.slug}" class="btn btn-detail">Подробнее</a>
+//                     <button class="btn btn-wishlist add-to-wishlist" data-id="${product.id}">❤️ В желаемое</button>
+//                 </div>
+//             </div>
+//         `;
+//         grid.appendChild(card);
+//     });
+    
+//     newProductsShown += hidden.length;
+    
+//     if (newProductsShown >= allNewProducts.length) {
+//         this.style.display = 'none';
+//     }
+    
+//     // Инициализируем новые кнопки
+//     document.querySelectorAll('.add-to-wishlist').forEach(btn => {
+//         btn.addEventListener('click', function(e) {
+//             e.preventDefault();
+//             const productId = this.dataset.id;
+//             if (productId) {
+//                 addToWishlist(productId);
+//             }
+//         });
+//     });
+// }
+// </script>
+
+<!-- БЕЗОПАСНАЯ ПЕРЕДАЧА ДАННЫХ ЧЕРЕЗ DATA-АТРИБУТ -->
+<div id="newProductsData" style="display:none;" data-products='<%= JSON.stringify(newProducts) %>'></div>
+
+<script>
+    // Забираем данные из data-атрибута
+    const newDataElement = document.getElementById('newProductsData');
+    const allNewProducts = newDataElement ? JSON.parse(newDataElement.dataset.products) : [];
+    let newProductsShown = 4;
+
+    function showMoreNewProducts() {
+        const grid = document.getElementById('newProductsGrid');
+        const hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
+
+        hidden.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-image">
+                    <img src="${product.image_url || '/images/placeholder.jpg'}" alt="${product.name}">
+                    <span class="badge new">Новинка</span>
                 </div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-    
-    newProductsShown += hidden.length;
-    
-    if (newProductsShown >= allNewProducts.length) {
-        this.style.display = 'none';
-    }
-    
-    // Инициализируем новые кнопки
-    document.querySelectorAll('.add-to-wishlist').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.id;
-            if (productId) {
-                addToWishlist(productId);
-            }
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <p class="product-category">${product.category_name || 'Без категории'}</p>
+                    <p class="product-price">${product.price} ₽</p>
+                    <div class="product-actions">
+                        <a href="/catalog/${product.slug}" class="btn btn-detail">Подробнее</a>
+                        <button class="btn btn-wishlist add-to-wishlist" data-id="${product.id}">❤️ В желаемое</button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
         });
-    });
-}
+
+        newProductsShown += hidden.length;
+
+        const btn = document.querySelector('.btn-show-more');
+        if (newProductsShown >= allNewProducts.length && btn) {
+            btn.style.display = 'none';
+        }
+
+        // Оживляем кнопки "В желаемое"
+        document.querySelectorAll('.add-to-wishlist').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.id;
+                if (productId) {
+                    addToWishlist(productId);
+                }
+            });
+        });
+    }
 </script>
