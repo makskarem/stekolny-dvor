@@ -31,7 +31,7 @@
         <h2>Популярные товары</h2>
         <div class="slider-container">
             <div class="slider-track">
-                <% if (popularProducts && popularProducts.length> 0) { %>
+                <% if (popularProducts && popularProducts.length > 0) { %>
                     <% popularProducts.forEach(product=> { %>
                         <div class="slider-item">
                             <div class="product-card">
@@ -156,7 +156,7 @@
 </div>
 
 <!-- Передаем данные через data-атрибут -->
-<div id="newProductsData" style="display:none;" data-products='<%= JSON.stringify(newProducts).replace(/' /g, "&#39;" )
+<div id="newProductsData" style="display:none;" data-products='<%= JSON.stringify(newProducts).replace(/'/g, "&#39;" )
     %>'></div>
 
 <script>
