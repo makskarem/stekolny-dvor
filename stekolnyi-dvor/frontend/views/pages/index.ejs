@@ -18,8 +18,11 @@
     <div class="container">
         <h2>Как мы производим нашу тару</h2>
         <div class="video-wrapper">
-            <iframe src="https://rutube.ru/embed/player/e2e65d261cab307042a79bf06b4c449b/" frameborder="0"
-                allow="autoplay; encrypted-media" allowfullscreen>
+            <iframe 
+                src="https://rutube.ru/embed/player/e2e65d261cab307042a79bf06b4c449b/" 
+                frameborder="0" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
             </iframe>
         </div>
     </div>
@@ -31,7 +34,7 @@
         <h2>Популярные товары</h2>
         <div class="slider-container">
             <div class="slider-track">
-                <% if (popularProducts && popularProducts.length > 0) { %>
+                <% if (popularProducts && popularProducts.length> 0) { %>
                     <% popularProducts.forEach(product=> { %>
                         <div class="slider-item">
                             <div class="product-card">
@@ -75,40 +78,37 @@
     <div class="container">
         <h2>Новинки</h2>
         <div class="products-grid" id="newProductsGrid">
-            <% if (newProducts && newProducts.length> 0) { %>
-                <% // Показываем первые 4 новинки var firstNewProducts=newProducts.slice(0, 4); for (var i=0; i <
-                    firstNewProducts.length; i++) { var product=firstNewProducts[i]; %>
+            <% if (newProducts && newProducts.length > 0) { %>
+                <% 
+                // Показываем первые 4 новинки
+                var firstNewProducts = newProducts.slice(0, 4);
+                for (var i = 0; i < firstNewProducts.length; i++) { 
+                    var product = firstNewProducts[i];
+                %>
                     <div class="product-card">
                         <div class="product-image">
                             <img src="<%= getFirstImage(product) %>" alt="<%= product.name %>">
                             <span class="badge new">Новинка</span>
                         </div>
                         <div class="product-info">
-                            <h3>
-                                <%= product.name %>
-                            </h3>
-                            <p class="product-category">
-                                <%= product.category_name || 'Без категории' %>
-                            </p>
-                            <p class="product-price">
-                                <%= product.price %> ₽
-                            </p>
+                            <h3><%= product.name %></h3>
+                            <p class="product-category"><%= product.category_name || 'Без категории' %></p>
+                            <p class="product-price"><%= product.price %> ₽</p>
                             <div class="product-actions">
                                 <a href="/catalog/<%= product.slug %>" class="btn btn-detail">Подробнее</a>
-                                <button class="btn btn-wishlist add-to-wishlist" data-id="<%= product.id %>">❤️ В
-                                    желаемое</button>
+                                <button class="btn btn-wishlist add-to-wishlist" data-id="<%= product.id %>">❤️ В желаемое</button>
                             </div>
                         </div>
                     </div>
-                    <% }%>
-                        <% } else { %>
-                            <p>Новинок пока нет</p>
-                            <% }%>
-        </div>
-
-        <% if (newProducts && newProducts.length> 4) { %>
-            <button class="btn-show-more" onclick="showMoreNewProducts()">Показать больше</button>
+                <% } %>
+            <% } else { %>
+                <p>Новинок пока нет</p>
             <% } %>
+        </div>
+        
+        <% if (newProducts && newProducts.length > 4) { %>
+            <button class="btn-show-more" onclick="showMoreNewProducts()">Показать больше</button>
+        <% } %>
     </div>
 </section>
 
@@ -156,7 +156,8 @@
 </div>
 
 <!-- Передаем данные через data-атрибут -->
-<div id="newProductsData" style="display:none;" data-products='<%= JSON.stringify(newProducts).replace(/'/g, "&#39;") %>'></div>
+<div id="newProductsData" style="display:none;" data-products='<%= JSON.stringify(newProducts).replace(/' /g, "&#39;" )
+    %>'></div>
 
 <script>
     // Получаем данные из data-атрибута
@@ -165,48 +166,48 @@
     let newProductsShown = 4;
 
     // Функция для получения первого изображения на клиенте
-    function getFirstImageClient(product) {
-        if (!product) return '/images/placeholder.jpg';
-
-        // Проверяем поле images (это может быть строка JSON или массив)
-        if (product.images) {
-            try {
-                // Если это строка - парсим
-                const images = typeof product.images === 'string'
-                    ? JSON.parse(product.images)
-                    : product.images;
-
-                if (Array.isArray(images) && images.length > 0) {
-                    return images[0];
-                }
-            } catch (e) {
-                console.log('Ошибка парсинга images:', e);
+function getFirstImageClient(product) {
+    if (!product) return '/images/placeholder.jpg';
+    
+    // Проверяем поле images (это может быть строка JSON или массив)
+    if (product.images) {
+        try {
+            // Если это строка - парсим
+            const images = typeof product.images === 'string' 
+                ? JSON.parse(product.images) 
+                : product.images;
+            
+            if (Array.isArray(images) && images.length > 0) {
+                return images[0];
             }
+        } catch(e) {
+            console.log('Ошибка парсинга images:', e);
         }
-
-        // Если есть image_url (старое поле)
-        if (product.image_url) {
-            return product.image_url;
-        }
-
-        return '/images/placeholder.jpg';
     }
+    
+    // Если есть image_url (старое поле)
+    if (product.image_url) {
+        return product.image_url;
+    }
+    
+    return '/images/placeholder.jpg';
+}
 
-    function showMoreNewProducts() {
-        var grid = document.getElementById('newProductsGrid');
-        var hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
-
-        if (hidden.length === 0) {
-            var btn = document.querySelector('.btn-show-more');
-            if (btn) btn.style.display = 'none';
-            return;
-        }
-
-        // Просто добавляем товары - БЕЗ ВСЯКОЙ ПРОКРУТКИ
-        hidden.forEach(function (product) {
-            var card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
+function showMoreNewProducts() {
+    var grid = document.getElementById('newProductsGrid');
+    var hidden = allNewProducts.slice(newProductsShown, newProductsShown + 4);
+    
+    if (hidden.length === 0) {
+        var btn = document.querySelector('.btn-show-more');
+        if (btn) btn.style.display = 'none';
+        return;
+    }
+    
+    // Просто добавляем товары - БЕЗ ВСЯКОЙ ПРОКРУТКИ
+    hidden.forEach(function(product) {
+        var card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
             <div class="product-image">
                 <img src="${getFirstImageClient(product)}" alt="${product.name}">
                 <span class="badge new">Новинка</span>
@@ -221,27 +222,27 @@
                 </div>
             </div>
         `;
-            grid.appendChild(card);
-        });
-
-        newProductsShown += hidden.length;
-
-        if (newProductsShown >= allNewProducts.length) {
-            var btn = document.querySelector('.btn-show-more');
-            if (btn) btn.style.display = 'none';
-        }
-
-        // НИКАКОЙ ПРОКРУТКИ - просто инициализируем новые кнопки
-        document.querySelectorAll('.add-to-wishlist').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                var productId = this.dataset.id;
-                if (productId) {
-                    addToWishlist(productId);
-                }
-            });
-        });
+        grid.appendChild(card);
+    });
+    
+    newProductsShown += hidden.length;
+    
+    if (newProductsShown >= allNewProducts.length) {
+        var btn = document.querySelector('.btn-show-more');
+        if (btn) btn.style.display = 'none';
     }
+    
+    // НИКАКОЙ ПРОКРУТКИ - просто инициализируем новые кнопки
+    document.querySelectorAll('.add-to-wishlist').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.dataset.id;
+            if (productId) {
+                addToWishlist(productId);
+            }
+        });
+    });
+}
     // Модальное окно
     function openCallModal() {
         document.getElementById('callModal').style.display = 'flex';
